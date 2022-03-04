@@ -1,0 +1,145 @@
+1.
+a)
+CREATE TABLE UpdatedStudent
+AS
+(SELECT * FROM Student);
+
+-----------------------------------------------------------------
+
+2.
+CREATE TABLE UpdatedStudent LIKE Student;
+-----------------------------------------------------------------
+
+3.
+a)
+SELECT * FROM Student
+where 
+ID>(SELECT count(*) from Student)-10
+
+b)
+SELECT ID,max(salary) as MAXSalary,min(salary) as MINSalary
+FROM Employee
+group by ID;
+
+-----------------------------------------------------------------
+
+4.
+from jinjasql import JinjaSql
+from six import string_types
+from copy import deepcopy
+user_transaction_template = '''
+select 
+    user_id
+    , count(*) as num_transactions
+    , sum(amount) as total_amount
+from 
+    transactions
+where
+    user_id = 1234
+    and transaction_date = '2022-03-02'
+group by
+    user_id
+'''
+params = {
+    'user_id': 1234,
+    'transaction_date': '2022-03-02'
+}
+j = JinjaSql(param_style='pyformat')
+query,bind_params = j.prepare_query(user_transaction_template,params)
+print(query)
+
+-----------------------------------------------------------------
+
+5.
+SELECT * from Student
+where
+name like 'P%' AND surname like 'S%';
+
+-----------------------------------------------------------------
+
+6.
+SELECT * from Student
+ORDER By ID DESC
+LIMIT 1
+
+-----------------------------------------------------------------
+
+7.
+WITH
+cteReports(FirstName, MiddleName, LastName, BusinessEntityID, description)
+AS
+(
+SELECT FirstName, MiddleName, LastName,BusinessEntityID,'Good'
+From Person.Person
+Where Emailpromotion=0
+UNION ALL
+SELECT FirstName, MiddleName, LastName,BusinessEntityID, 'Better'
+From Person.Person
+Where Emailpromotion=1
+UNION ALL
+SELECT p.FirstName, p.MiddleName, p.LastName, p.BusinessEntityID,'Best'
+From Person.Person  p 
+)
+
+SELECT
+FirstName + ' ' +MiddleName +' '+ LastName AS FullName,description
+From cteReports
+
+-----------------------------------------------------------------
+
+8.
+
+
+---------- Forwarded message ---------
+From: Jack njill <njilljack561@gmail.com>
+Date: Fri, Mar 4, 2022 at 5:17 PM
+Subject:
+To: <yaminimamidipaka0908@gmail.com>
+
+
+CREATE TRIGGER [dbo].[Customer_UPDATE]
+       ON [dbo].[Customers]
+AFTER UPDATE
+AS
+BEGIN
+       SET NOCOUNT ON;
+ 
+       DECLARE @CustomerId INT
+       DECLARE @Action VARCHAR(50)
+ 
+       SELECT @CustomerId = INSERTED.CustomerId       
+       FROM INSERTED
+ 
+       IF UPDATE(Name)
+       BEGIN
+              SET @Action = 'Updated Name'
+       END
+ 
+       IF UPDATE(Country)
+       BEGIN
+              SET @Action = 'Updated Country'
+       END
+ 
+       INSERT INTO CustomerLogs
+       VALUES(@CustomerId, @Action)
+END
+
+Delete:
+CREATE TRIGGER [dbo].[Customer_DELETE]
+       ON [dbo].[Customers]
+AFTER DELETE
+AS
+BEGIN
+       SET NOCOUNT ON;
+ 
+       DECLARE @CustomerId INT
+ 
+       SELECT @CustomerId = DELETED.CustomerId       
+       FROM DELETED
+ 
+       INSERT INTO CustomerLogs
+       VALUES(@CustomerId, 'Deleted')
+END
+
+-----------------------------------------------------------------
+
